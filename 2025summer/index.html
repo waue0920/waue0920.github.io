@@ -10,12 +10,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Visualization & Content Choices: 
-        1. Weekly Plan Display: 'Weekly Deliverables' section has enhanced styling. Other sections ('Learning Focus', 'Learning Content & Resources', 'Implementation Tasks') remain icon-coded.
-        2. Header Text: "Final Deliverables" section now has a light yellow background for emphasis. "Recommended Overall Learning Resources" now includes a new link for NCHC GPU computing.
-        3. Intelligent Learning Companion (Gemini): Unchanged.
-        4. Project Idea Generator (Week 8, Gemini): Unchanged.
-        5. Resource Expansion Suggester (Gemini): Unchanged.
-        The overview chart remains removed.
+        1. Weekly Plan Display: Content for each week (goals, resources, exercises, deliverables) updated according to user's new '%plan%'. 'Weekly Deliverables' section has enhanced styling. Specific URLs added to Week 1, 2, 3, and 4 content for relevant tools and concepts.
+        2. Header Text: "Final Deliverables" section has a light yellow background. "Recommended Overall Learning Resources" includes NCHC link.
+        3. Intelligent Learning Companion (Gemini): Prompts will use updated short_titles.
+        4. Project Idea Generator (Week 8, Gemini): Prompt will use updated topics from the new plan.
+        5. Resource Expansion Suggester (Gemini): Prompts will use updated short_titles.
     -->
     <style>
         body {
@@ -104,6 +103,15 @@
         .highlighted-deliverables ul {
             color: #285E61; /* Slightly darker teal for list items */
         }
+        .sub-item-link {
+            margin-left: 1.5rem; /* Indent sub-items */
+            display: block; /* Ensure links are on new lines if needed */
+            font-size: 0.8rem; /* Slightly smaller font for links */
+            color: #4299E1; /* Blue color for links */
+        }
+        .sub-item-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -155,106 +163,135 @@
         const learningData = [
             {
                 week: 1,
-                title: "第一週：基礎知識建立 (7月1日 - 7月5日)",
-                short_title: "基礎知識建立",
-                load: 4, 
-                icon: "📚",
+                title: "第一週",
+                short_title: "TWCC & PyTorch 基礎",
+                icon: "🚀",
                 content: {
-                    goals: ["Python程式設計複習與進階 (特別是與資料科學相關的函式庫)", "深度學習基本概念 (神經網路、梯度下降、反向傳播等)", "PyTorch基礎 (張量操作、自動微分、模型搭建、資料載入)"],
-                    resources: ["Python: 複習NumPy, Pandas, Matplotlib。", "深度學習: 李宏毅機器學習課程 (約前10-15講，涵蓋DL基礎)", "PyTorch官方教學 \"Deep Learning with PyTorch: A 60 Minute Blitz\"。", "PyTorch: 張量 (Tensors)、autograd、nn.Module、optim、Dataset & DataLoader。"],
-                    exercises: ["完成PyTorch官方教學中的所有範例。", "使用PyTorch實現一個簡單的線性回歸模型。", "使用PyTorch實現一個簡單的多層感知機 (MLP) 並在MNIST數據集上進行訓練與測試。"],
-                    deliverables: ["提交包含上述實作任務的Python腳本。", "學習筆記：整理Python進階、DL基礎及PyTorch核心概念。", "GitHub初步建立：創建專案倉儲，上傳本週程式碼。"]
+                    goals: [
+                        "了解 twcc 如何使用",
+                        "<a href='https://man.twcc.ai/portal_man/container.html' target='_blank' class='sub-item-link'>↳ 國網中心 TWCC 容器運算服務手冊</a>"
+                    ],
+                    resources: [
+                        "pytorch 學習",
+                        "<a href='https://pytorch.org/tutorials/' target='_blank' class='sub-item-link'>↳ PyTorch 官方教學 (Tutorials)</a>",
+                        "twcc container 使用方式",
+                        "<a href='https://man.twcc.ai/portal_man/container.html' target='_blank' class='sub-item-link'>↳ 國網中心 TWCC 容器運算服務手冊</a>"
+                    ],
+                    exercises: [],
+                    deliverables: ["申請 github / twcc account", "GitHub 程式碼提交", "本週進度投影片"]
                 }
             },
             {
                 week: 2,
-                title: "第二週：多GPU與分散式訓練入門 (7月8日 - 7月12日)",
-                short_title: "多GPU與分散式訓練",
-                load: 5, 
-                icon: "💻",
+                title: "第二週",
+                short_title: "Singularity & Slurm 基礎",
+                icon: "⚙️",
                 content: {
-                    goals: ["PyTorch進階模型 (CNN, RNN)", "理解GPU運算原理與PyTorch的GPU支援 (.to(device))", "單機多GPU訓練 (nn.DataParallel, nn.DistributedDataParallel 概念介紹)", "YOLO系列模型概覽 (了解其應用場景與基本原理)"],
-                    resources: ["PyTorch進階: 李宏毅深度學習課程 (CNN, RNN相關章節)。", "PyTorch官方教學 (Convolutional Neural Networks, Recurrent Neural Networks)。", "多GPU: PyTorch官方文件關於 nn.DataParallel 和 nn.DistributedDataParallel (DDP) 的介紹。", "李沐論文精讀：可選讀一篇與分散式訓練相關的基礎論文 (例如早期參數伺服器或AllReduce概念)。", "YOLO: 閱讀YOLO系列論文摘要 (YOLOv1 ~ YOLOv9)，了解其發展脈絡。", "觀看YOLOv9相關介紹影片或文章。"],
-                    exercises: ["使用PyTorch實現一個CNN模型 (如LeNet-5或簡化版AlexNet) 在CIFAR-10數據集上進行訓練。", "將上一個CNN模型改寫為能在單機多GPU上使用 nn.DataParallel 運行 (若硬體允許)。", "初步嘗試運行YOLOv9官方提供的預訓練模型進行推論 (inference)。"],
-                    deliverables: ["提交CNN模型程式碼及 DataParallel 版本程式碼。", "YOLOv9預訓練模型推論結果截圖或報告。", "學習筆記：整理CNN、RNN原理，以及 DataParallel 的使用方法與限制。"]
+                    goals: [
+                        "了解國網中心的 slurm 與 singularity是什麼",
+                        "<a href='https://slurm.schedmd.com/quickstart.html' target='_blank' class='sub-item-link'>↳ Slurm 快速入門</a>",
+                        "<a href='https://apptainer.org/docs/user/main/quick_start.html' target='_blank' class='sub-item-link'>↳ Singularity/Apptainer 快速入門</a>",
+                        "<span class='sub-item-link'>↳ 參考總體資源中的「國網中心GPU跨節點計算」</span>"
+
+                    ],
+                    resources: [
+                        "singularity 學習",
+                        "<a href='https://apptainer.org/docs/user/main/' target='_blank' class='sub-item-link'>↳ Singularity/Apptainer 使用者手冊</a>",
+                        "slurm 學習",
+                        "<a href='https://slurm.schedmd.com/documentation.html' target='_blank' class='sub-item-link'>↳ Slurm 官方文件</a>"
+                    ],
+                    exercises: [],
+                    deliverables: ["送 job 到 twcc hpc", "GitHub 程式碼提交", "本週進度投影片"]
                 }
             },
             {
                 week: 3,
-                title: "第三週：Slurm與Singularity基礎 (7月15日 - 7月19日)",
-                short_title: "Slurm與Singularity",
-                load: 4, 
-                icon: "⚙️",
+                title: "第三週",
+                short_title: "YOLOv9 初步",
+                icon: "🎯",
                 content: {
-                    goals: ["HPC (高效能運算) 叢集基本概念", "Slurm工作排程系統：核心概念 (節點, 分區, 工作, 任務), 常用指令 (sinfo, squeue, sbatch, scancel, srun), 批次腳本 (batch script) 撰寫", "Singularity (Apptainer) 容器技術：容器化概念與優勢, Singularity映像檔 (SIF) 的建立與使用, 定義檔 (Definition File) 撰寫基礎"],
-                    resources: ["Slurm: Slurm官方快速入門指南。", "閱讀學校或機構HPC叢集提供的Slurm使用手冊。", "Singularity: Singularity/Apptainer官方文件 (Quick Start, User Guide)。", "學習如何從Docker Hub拉取映像並轉換為Singularity格式。"],
-                    exercises: ["撰寫並提交一個簡單的Slurm批次腳本，執行一個Python程式 (例如印出 \"Hello Slurm\")。", "學習查詢叢集狀態、提交工作、查看工作狀態、取消工作。", "建立一個包含PyTorch環境的Singularity定義檔，並成功建置SIF映像檔。", "在Singularity容器內運行先前開發的PyTorch MLP或CNN模型 (CPU版本即可)。"],
-                    deliverables: ["提交Slurm批次腳本範例。", "提交Singularity定義檔及建置成功的SIF映像檔 (或提供定義檔供檢視)。", "學習筆記：整理Slurm常用指令與批次腳本語法，Singularity映像檔建立與使用流程。"]
+                    goals: [
+                        "了解 yolo 原理",
+                        "<a href='https://arxiv.org/abs/1506.02640' target='_blank' class='sub-item-link'>↳ YOLO (原始論文) - You Only Look Once: Unified, Real-Time Object Detection</a>"
+                    ],
+                    resources: [
+                        "yolov9 學習",
+                        "<a href='https://github.com/WongKinYiu/yolov9' target='_blank' class='sub-item-link'>↳ YOLOv9 GitHub Repository</a>",
+                        "<a href='https://arxiv.org/abs/2402.13616' target='_blank' class='sub-item-link'>↳ YOLOv9 論文 - Learning What You Want to Learn Using Programmable Gradient Information</a>",
+                        "yolo 測試", 
+                        "yolo 訓練"
+                    ],
+                    exercises: [],
+                    deliverables: ["使用yolo訓練", "GitHub 程式碼提交", "本週進度投影片"]
                 }
             },
             {
                 week: 4,
-                title: "第四週：整合實作與專案選題 (7月22日 - 7月26日)",
-                short_title: "整合與專案選題",
-                load: 5, 
-                icon: "🧭",
+                title: "第四週",
+                short_title: "多GPU訓練 & W&B",
+                icon: "📈",
                 content: {
-                    goals: ["整合Slurm與Singularity運行PyTorch程式。", "PyTorch nn.DistributedDataParallel (DDP) 的深入理解與初步實作 (單節點多GPU)。", "YOLOv9模型架構初探 (閱讀論文或分析程式碼結構)。", "專案題目發想與文獻回顧。"],
-                    resources: ["整合: 學習如何在Slurm批次腳本中啟動Singularity容器，並在容器內執行PyTorch程式。", "DDP: PyTorch官方DDP教學。", "李沐論文精讀：精讀一篇與DDP或更先進分散式訓練框架相關的論文 (如Horovod, DeepSpeed等概念)。", "YOLOv9: 仔細閱讀YOLOv9論文，特別是其創新點。", "瀏覽YOLOv9官方GitHub的models和train.py部分。"],
-                    exercises: ["撰寫Slurm批次腳本，透過Singularity容器運行第二週的CNN模型 (使用單GPU)。", "(若硬體與環境允許) 嘗試將CNN模型改寫為使用DDP在單節點多GPU上訓練。", "下載YOLOv9原始碼，嘗試理解其資料載入、模型建構、訓練迴圈的基本流程。", "開始思考最終專案方向 (例如：使用YOLOv9對特定資料集進行物件偵測、改進YOLOv9的某個模組、分析YOLOv9在不同硬體配置下的效能等)，並進行初步文獻搜尋。"],
-                    deliverables: ["提交整合Slurm與Singularity運行PyTorch程式的腳本。", "DDP (單節點) 實作程式碼 (若完成)。", "初步專案構想書 (1-2頁，包含問題描述、初步方法、預期目標、相關文獻列表)。"]
+                    goals: [
+                        "學習多GPU/跨節點訓練",
+                        "<a href='https://pytorch.org/tutorials/intermediate/ddp_tutorial.html' target='_blank' class='sub-item-link'>↳ PyTorch DistributedDataParallel (DDP) 教學</a>",
+                        "學習使用 wandb.ai"
+                    ],
+                    resources: [
+                        "接續上週內容，改用多gpu / 跨節點",
+                        "wandb.ai",
+                        "<a href='https://wandb.ai/site' target='_blank' class='sub-item-link'>↳ Weights & Biases 官方網站</a>",
+                        "<a href='https://docs.wandb.ai/' target='_blank' class='sub-item-link'>↳ Weights & Biases 文件</a>"
+                    ],
+                    exercises: [],
+                    deliverables: ["使用自己的專題資料集用yolo訓練，並搭配wandb觀看結果", "GitHub 程式碼提交", "本週進度投影片"]
                 }
             },
             {
                 week: 5,
-                title: "第五週：專案開發與實驗 (7月29日 - 8月2日)",
-                short_title: "專案開發與實驗",
-                load: 6, 
-                icon: "🧪",
+                title: "第五週",
+                short_title: "專題實驗 I & 報告初稿",
+                icon: "🔬",
                 content: {
-                    goals: ["確定專案題目與研究目標。", "YOLOv9模型客製化訓練：準備自訂資料集、修改設定檔、開始初步訓練。", "多GPU訓練實戰 (DDP)。", "實驗設計與版本控制 (Git)。"],
-                    resources: ["YOLOv9訓練: YOLOv9官方文件關於自訂資料集訓練的指南。", "學習資料標註工具 (如LabelImg, CVAT) 的使用。", "專案管理: Git基本操作 (commit, push, branch, merge)。"],
-                    exercises: ["根據選定的專案題目，準備或獲取相應的資料集。", "對資料集進行預處理與標註 (若需要)。", "修改YOLOv9設定檔，使用自訂資料集在單GPU上進行初步訓練。", "將YOLOv9訓練腳本調整為支援DDP，並在單節點多GPU環境下 (透過Slurm + Singularity) 進行訓練。", "建立詳細的實驗記錄，追蹤不同參數設定下的訓練結果。", "開始撰寫論文的「緒論」與「相關研究」部分。"],
-                    deliverables: ["GitHub專案更新：包含資料集準備腳本 (若有)、YOLOv9設定檔、初步訓練腳本。", "初步訓練結果報告 (包含損失曲線、評估指標等)。", "論文初稿：緒論與相關研究部分。"]
+                    goals: ["完成專題實驗第一階段目標"],
+                    resources: [],
+                    exercises: ["專題實驗1", "實驗研究報告初版 doc"],
+                    deliverables: ["專題實驗1 初步成果", "實驗研究報告初版 doc", "GitHub 程式碼提交", "本週進度投影片"]
                 }
             },
             {
                 week: 6,
-                title: "第六週：實驗優化與論文撰寫 (8月5日 - 8月9日)",
-                short_title: "優化與論文撰寫",
-                load: 6, 
-                icon: "📈",
+                title: "第六週",
+                short_title: "專題實驗 II & 報告撰寫",
+                icon: "✍️",
                 content: {
-                    goals: ["跨節點多GPU訓練 (若資源允許，挑戰Slurm設定多節點任務)。", "模型調參與效能優化 (學習率調整、批次大小、正則化等)。", "實驗結果分析與視覺化。", "論文「方法」部分撰寫。"],
-                    resources: ["跨節點訓練: Slurm進階設定 (節點列表、任務分配)。", "PyTorch DDP跨節點通訊設定 (NCCL, Gloo)。", "李沐論文精讀：可選讀一篇關於大規模訓練或模型壓縮/加速的論文。", "論文寫作: 學術論文結構與寫作規範。"],
-                    exercises: ["持續進行YOLOv9模型訓練與調參，目標是提升模型在自訂資料集上的表現。", "(挑戰任務) 嘗試配置並執行跨節點多GPU訓練。", "分析實驗數據，使用Matplotlib等工具繪製圖表 (如mAP變化、損失曲線比較等)。", "撰寫論文的「實驗方法」部分，詳細描述資料集、模型架構、訓練設定、評估指標。", "開始撰寫論文的「實驗結果」部分。"],
-                    deliverables: ["GitHub專案更新：包含優化後的訓練腳本、實驗結果數據與圖表。", "跨節點訓練嘗試報告 (若進行)。", "論文初稿：方法與實驗結果部分。"]
+                    goals: ["完成專題實驗第二階段目標"],
+                    resources: [],
+                    exercises: ["專題實驗2", "撰寫實驗研究報告 doc"],
+                    deliverables: ["專題實驗2 成果", "實驗研究報告 doc 更新", "GitHub 程式碼提交", "本週進度投影片"]
                 }
             },
             {
                 week: 7,
-                title: "第七週：論文修改與成果整理 (8月12日 - 8月16日)",
-                short_title: "論文修改與整理",
-                load: 4, 
-                icon: "📄",
+                title: "第七週",
+                short_title: "專題實驗 III & 報告/簡報",
+                icon: "📊",
                 content: {
-                    goals: ["論文「結論」與「摘要」撰寫。", "論文整體校閱、修改與潤飾。", "GitHub專案整理與文件完善 (README.md)。", "成果簡報架構設計。"],
-                    resources: ["參考優秀學術論文的寫作風格與結構。", "學習如何撰寫清晰、簡潔的README文件。"],
-                    exercises: ["完成論文剩餘部分 (結論、摘要、參考文獻)。", "多次通讀論文，檢查邏輯、流暢度、文法與格式。", "整理GitHub專案，確保程式碼可讀性、註解完整，並撰寫詳細的README.md，說明專案內容、如何設定環境、執行程式碼。", "設計成果簡報的初步大綱與內容。"],
-                    deliverables: ["接近完成的論文稿件。", "結構完整、文件清晰的GitHub專案。", "成果簡報大綱。"]
+                    goals: ["完成專題實驗第三階段並整合成果", "深入相關Paper研究"],
+                    resources: [],
+                    exercises: ["專題實驗3", "Paper研究", "撰寫實驗研究報告 doc"],
+                    deliverables: ["研究報告doc", "研究報告ppt", "GitHub 程式碼提交", "本週進度投影片"]
                 }
             },
             {
                 week: 8,
-                title: "第八週：成果發表與總結 (8月19日 - 8月23日)",
-                short_title: "成果發表與總結",
-                load: 3, 
-                icon: "🏆",
+                title: "第八週",
+                short_title: "論文撰寫 & 總結",
+                icon: "🎓",
                 content: {
-                    goals: ["成果簡報製作與演練。", "專案總結與未來工作展望。", "準備論文投稿 (選擇合適的會議或期刊)。"],
-                    resources: ["觀摩優秀的學術簡報。"],
-                    exercises: ["製作最終的成果簡報投影片。", "進行多次簡報演練，控制時間並熟悉內容。", "模擬問答環節。", "根據指導老師意見，最終修改論文，準備投稿。", "整理所有學習筆記與心得。"],
-                    deliverables: ["最終版成果投影片。", "完成的論文稿件 (準備投稿狀態)。", "完整的GitHub專案。", "暑期實習總結報告 (可包含學習心得、遇到的困難與解決方法、未來方向等)。", "內部成果發表會。"]
+                    goals: ["整理所有專題實驗成果", "完成論文初稿"],
+                    resources: [],
+                    exercises: ["整理專題實驗", "Paper研究", "撰寫論文"],
+                    deliverables: ["論文初稿", "GitHub 程式碼提交", "本週進度投影片"]
                 }
             }
         ];
@@ -294,13 +331,24 @@
                 blockClasses = "highlighted-deliverables"; 
             }
 
+            let displayTitle = title;
+            if (type === 'goals') displayTitle = '學習重點';
+            else if (type === 'resources') displayTitle = '學習內容';
+            else if (type === 'exercises') displayTitle = '實作任務';
+            else if (type === 'deliverables') displayTitle = '每週成果';
+
             let blockHTML = `
                 <div class="${blockClasses}">
                     <h4 class="${titleClasses}">
-                       <span class="text-2xl mr-3">${icon}</span> ${title}
+                       <span class="text-2xl mr-3">${icon}</span> ${displayTitle} 
                     </h4>
                     <ul class="${listClasses}">
-                        ${items.map(item => `<li>${item.replace(/`([^`]+)`/g, '<code class="bg-gray-200 text-sm text-red-600 font-mono px-1 py-0.5 rounded">$1</code>')}</li>`).join('')}
+                        ${items.map(item => {
+                            if (item.startsWith("<a href=") || item.startsWith("<span class='sub-item-link'>")) {
+                                return `<li class="list-none -ml-2">${item}</li>`; 
+                            }
+                            return `<li>${item.replace(/`([^`]+)`/g, '<code class="bg-gray-200 text-sm text-red-600 font-mono px-1 py-0.5 rounded">$1</code>')}</li>`;
+                        }).join('')}
                     </ul>`;
             
             if (type === 'exercises' && weekData && weekData.week === 8) {
@@ -313,7 +361,7 @@
                         <div id="projectIdeasResponse" class="gemini-response hidden"></div>
                     </div>`;
             }
-            if (type === 'resources' && weekData) {
+            if (type === 'resources' && weekData) { 
                  blockHTML += `
                     <div class="gemini-feature-card">
                         <h5 class="text-md font-semibold text-gray-700 mb-2">✨ 擴充資源建議</h5>
@@ -334,17 +382,17 @@
             
             contentAreaEl.innerHTML = `
                 <div class="content-card p-6 md:p-8 animate-fade-in">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-1">${data.icon} ${data.title}</h3>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-1">${data.title}</h3>
                     <p class="text-sm text-gray-500 mb-6">(${data.short_title})</p>
 
-                    ${createContentBlock('學習重點', data.content.goals, '🎯')}
-                    ${createContentBlock('學習內容與資源', data.content.resources, '📖', data, 'resources')}
-                    ${createContentBlock('實作任務', data.content.exercises, '💻', data, 'exercises')}
+                    ${createContentBlock('學習重點', data.content.goals, '🎯', data, 'goals')}
+                    ${createContentBlock('學習內容', data.content.resources, '📖', data, 'resources')}
+                    ${data.content.exercises && data.content.exercises.length > 0 ? createContentBlock('實作任務', data.content.exercises, '💻', data, 'exercises') : ''}
                     ${createContentBlock('每週成果', data.content.deliverables, '✅', data, 'deliverables')}
 
                     <div class="gemini-feature-card">
                         <h4 class="text-xl font-semibold text-gray-700 mb-3">✨ 智能學習夥伴</h4>
-                        <p class="text-sm text-gray-500 mb-3">對本週主題「${data.short_title}」有任何疑問嗎？問問 AI 吧！</p>
+                        <p class="text-sm text-gray-500 mb-3">對本週「${data.short_title}」有任何疑問嗎？問問 AI 吧！</p>
                         <textarea id="askCompanionInput" class="gemini-input mb-2 text-sm" rows="3" placeholder="請在此輸入您關於「${data.short_title}」的問題..."></textarea>
                         <button id="askCompanionBtn" class="gemini-button text-sm">發送問題</button>
                         <div id="askCompanionLoader" class="loader hidden mt-2"></div>
@@ -425,7 +473,7 @@
                         alert('請先輸入您的問題。');
                         return;
                     }
-                    const prompt = `我正在參與一個關於「多GPU環境PyTorch深度學習模型開發與HPC工具應用」的暑期實習。目前是第 ${weekData.week} 週，主題是「${weekData.title}」。關於這個主題，我想請問：${input.value}\n請提供簡潔易懂的解釋，並考慮到我正在為最終的學術論文和專案做準備。`;
+                    const prompt = `我正在參與一個關於「多GPU環境PyTorch深度學習模型開發與HPC工具應用」的暑期實習。目前是${weekData.title}，主題是「${weekData.short_title}」。關於這個主題，我想請問：${input.value}\n請提供簡潔易懂的解釋，並考慮到我正在為最終的學術論文和專案做準備。`;
                     callGeminiAPI(prompt, 'askCompanionResponse', 'askCompanionLoader');
                 });
             }
@@ -435,18 +483,22 @@
                 if (generateProjectIdeasBtn) {
                     generateProjectIdeasBtn.addEventListener('click', () => {
                         const learnedTopics = learningData.slice(0, 7).map(w => w.short_title).join(', ');
-                        const prompt = `我是一名即將完成為期八週「多GPU環境PyTorch深度學習模型開發與HPC工具應用」暑期實習的學生。我已學習了以下主題：${learnedTopics} (包含PyTorch, 多GPU訓練如DataParallel/DDP, YOLOv9模型, Slurm, Singularity等HPC工具)。我最終的成果需要包含一個GitHub專案和一篇學術論文初稿。請根據我所學的內容，提供 3-4 個具體且有研究價值的專案點子，並簡要說明每個點子可以如何實踐，以及可能的創新點或研究方向，以符合學術論文的要求。`;
+                        const prompt = `我是一名即將完成為期八週「多GPU環境PyTorch深度學習模型開發與HPC工具應用」暑期實習的學生。我已學習了以下主題：${learnedTopics} (包含PyTorch, TWCC, Singularity, Slurm, YOLOv9, 多GPU訓練, wandb.ai)。我最終的成果需要包含一個GitHub專案和一篇學術論文/技術報告初稿。請根據我所學的內容，提供 3-4 個具體且有研究價值的專案點子，並簡要說明每個點子可以如何實踐，以及可能的創新點或研究方向，以符合學術論文/技術報告的要求。`;
                         callGeminiAPI(prompt, 'projectIdeasResponse', 'projectIdeasLoader');
                     });
                 }
             }
             
             const findMoreResourcesBtn = document.getElementById('findMoreResourcesBtn');
-            if (findMoreResourcesBtn) {
+            if (findMoreResourcesBtn && weekData.content.resources && weekData.content.resources.length > 0) { 
                 findMoreResourcesBtn.addEventListener('click', () => {
-                    const prompt = `我正在學習第 ${weekData.week} 週的主題：「${weekData.title}」。為了更深入理解並為我的專案和論文做準備，請推薦 2-3 個額外的進階學習資源。這些資源可以是相關領域的最新研究論文、重要的開源專案、深入的技術部落格文章、或有用的工具。請提供資源名稱，如果可能的話，也附上簡短描述其為何重要或與主題相關。`;
+                    const plainResources = weekData.content.resources.filter(r => !r.startsWith("<a href=") && !r.startsWith("<span class='sub-item-link'>")).join(', ');
+                    const prompt = `我正在學習${weekData.title}的主題：「${weekData.short_title}」，目前的學習內容包含：${plainResources}。為了更深入理解並為我的專案和論文做準備，請推薦 2-3 個與這些內容相關的額外進階學習資源。這些資源可以是相關領域的最新研究論文、重要的開源專案、深入的技術部落格文章、或有用的工具。請提供資源名稱，如果可能的話，也附上簡短描述其為何重要或與主題相關。`;
                     callGeminiAPI(prompt, 'moreResourcesResponse', 'moreResourcesLoader');
                 });
+            } else if (findMoreResourcesBtn) { 
+                 const parentCard = findMoreResourcesBtn.closest('.gemini-feature-card');
+                 if(parentCard) parentCard.classList.add('hidden');
             }
         }
 
@@ -456,4 +508,3 @@
     </script>
 </body>
 </html>
-
