@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Visualization & Content Choices: 
         1. Weekly Plan Display: 'Weekly Deliverables' section has enhanced styling. Other sections ('Learning Focus', 'Learning Content & Resources', 'Implementation Tasks') remain icon-coded.
-        2. Header Text: Key sentence about final deliverables is now highlighted using a div wrapper with styling similar to the resources block.
+        2. Header Text: "Final Deliverables" section now has a light yellow background for emphasis. "Recommended Overall Learning Resources" now includes a new link for NCHC GPU computing.
         3. Intelligent Learning Companion (Gemini): Unchanged.
         4. Project Idea Generator (Week 8, Gemini): Unchanged.
         5. Resource Expansion Suggester (Gemini): Unchanged.
@@ -104,7 +104,6 @@
         .highlighted-deliverables ul {
             color: #285E61; /* Slightly darker teal for list items */
         }
-        /* Removed .highlighted-final-deliverables-text as it's now handled by the parent div */
     </style>
 </head>
 <body class="antialiased">
@@ -119,10 +118,16 @@
         <main class="flex-1 p-4 md:p-8 lg:p-10">
             <header class="mb-8">
                 <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3">暑期實習計畫：多GPU環境PyTorch深度學習模型開發與HPC工具應用</h2>
-                <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-md mb-3">
-                    <p class="text-indigo-700 text-sm font-medium">
-                        總目標是培養您在多GPU環境下使用PyTorch進行深度學習模型開發與訓練的能力，並掌握Slurm與Singularity等HPC工具的使用。最終成果將包含GitHub專案、學術論文初稿及成果簡報。
-                    </p>
+                <p class="text-gray-600 text-sm mb-2">
+                    總目標是培養您在多GPU環境下使用PyTorch進行深度學習模型開發與訓練的能力，並掌握Slurm與Singularity等HPC工具的使用。
+                </p>
+                <div class="p-3 bg-yellow-50 border border-yellow-300 rounded-md mb-3">
+                    <h4 class="font-semibold text-yellow-800 mb-1">最終成果將包含：</h4>
+                    <ul class="list-disc list-inside text-yellow-700 text-xs resource-list">
+                        <li>學術論文/技術報告</li>
+                        <li>Github專案</li>
+                        <li>成果簡報</li>                        
+                   </ul>
                 </div>
                 <p class="text-gray-600 text-sm mb-2">
                     這是一個互動式的學習指南，旨在協助您完成此暑期實習計畫。
@@ -130,6 +135,7 @@
                 <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-md mt-3">
                     <h4 class="font-semibold text-indigo-700 mb-1">建議總體學習資源：</h4>
                     <ul class="list-disc list-inside text-indigo-600 text-xs resource-list">
+                        <li>國網中心GPU跨節點計算 (<a href="nchc_gpu_hpc_slurm_2025.pdf" target="_blank" class="hover:underline">PDF講義</a> / <a href="https://docs.google.com/presentation/d/1WKUXZJMqch0xUEPKZCN1cBLErxKtJ9P2/edit?slide=id.p1#slide=id.p1" target="_blank" class="hover:underline">Google Slides</a>)</li>
                         <li><a href="https://www.youtube.com/channel/UCmLiSKecyzKPKuA2MRGMJbQ" target="_blank" class="hover:underline">李宏毅教授機器學習/深度學習課程 (YouTube)</a> / <a href="https://www.bilibili.com/video/BV1JE411g7XF/" target="_blank" class="hover:underline">(Bilibili)</a></li>
                         <li><a href="https://www.youtube.com/c/AstonZhang" target="_blank" class="hover:underline">李沐博士論文精讀系列 (YouTube)</a> / <a href="https://space.bilibili.com/156774845" target="_blank" class="hover:underline">(Bilibili)</a></li>
                         <li><a href="https://pytorch.org/docs/stable/index.html" target="_blank" class="hover:underline">PyTorch官方文件 (pytorch.org)</a></li>
@@ -285,8 +291,7 @@
             let listClasses = "list-disc list-inside space-y-2 text-gray-600 pl-2 text-sm";
 
             if (type === 'deliverables') {
-                blockClasses = "highlighted-deliverables"; // Uses specific background and border
-                // For highlighted-deliverables, h4 and ul colors are set by its own CSS rule
+                blockClasses = "highlighted-deliverables"; 
             }
 
             let blockHTML = `
