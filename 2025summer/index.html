@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互動式暑期實習計畫 (整合Gemini API)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Visualization & Content Choices: 
+        1. Weekly Plan Display: 'Weekly Deliverables' section has enhanced styling. Other sections ('Learning Focus', 'Learning Content & Resources', 'Implementation Tasks') remain icon-coded.
+        2. Header Text: Key sentence about final deliverables is now highlighted using a div wrapper with styling similar to the resources block.
+        3. Intelligent Learning Companion (Gemini): Unchanged.
+        4. Project Idea Generator (Week 8, Gemini): Unchanged.
+        5. Resource Expansion Suggester (Gemini): Unchanged.
+        The overview chart remains removed.
+    -->
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        .nav-item {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-item.active {
+            background-color: #4A5568;
+            color: #FFFFFF;
+            transform: translateX(4px);
+        }
+        .nav-item:not(.active):hover {
+            background-color: #E2E8F0;
+            color: #2D3748;
+        }
+        .content-card {
+            background-color: #FFFFFF;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .gemini-feature-card {
+            border: 1px solid #E2E8F0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            background-color: #F9FAFB;
+        }
+        .gemini-button {
+            background-color: #4A5568;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .gemini-button:hover {
+            background-color: #2D3748;
+        }
+        .gemini-input {
+            border: 1px solid #D1D5DB;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            width: 100%;
+        }
+        .gemini-response {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background-color: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 0.375rem;
+            white-space: pre-wrap; 
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4A5568;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 0.5rem auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .resource-list li {
+            margin-bottom: 0.25rem;
+        }
+        .highlighted-deliverables {
+            background-color: #E6FFFA; /* Light teal background */
+            border: 1px solid #B2F5EA; /* Teal border */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+        .highlighted-deliverables h4 {
+            color: #2C7A7B; /* Darker teal for title */
+        }
+        .highlighted-deliverables ul {
+            color: #285E61; /* Slightly darker teal for list items */
+        }
+        /* Removed .highlighted-final-deliverables-text as it's now handled by the parent div */
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <aside class="w-full md:w-72 bg-gray-100 p-4 md:p-6 shadow-md md:shadow-none flex-shrink-0">
+            <h1 class="text-xl md:text-2xl font-bold text-gray-700 mb-6 text-center md:text-left">實習週程</h1>
+            <nav id="navigation" class="flex md:flex-col justify-around md:justify-start">
+            </nav>
+        </aside>
+
+        <main class="flex-1 p-4 md:p-8 lg:p-10">
+            <header class="mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3">暑期實習計畫：多GPU環境PyTorch深度學習模型開發與HPC工具應用</h2>
+                <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-md mb-3">
+                    <p class="text-indigo-700 text-sm font-medium">
+                        總目標是培養您在多GPU環境下使用PyTorch進行深度學習模型開發與訓練的能力，並掌握Slurm與Singularity等HPC工具的使用。最終成果將包含GitHub專案、學術論文初稿及成果簡報。
+                    </p>
+                </div>
+                <p class="text-gray-600 text-sm mb-2">
+                    這是一個互動式的學習指南，旨在協助您完成此暑期實習計畫。
+                </p>
+                <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-md mt-3">
+                    <h4 class="font-semibold text-indigo-700 mb-1">建議總體學習資源：</h4>
+                    <ul class="list-disc list-inside text-indigo-600 text-xs resource-list">
+                        <li><a href="https://www.youtube.com/channel/UCmLiSKecyzKPKuA2MRGMJbQ" target="_blank" class="hover:underline">李宏毅教授機器學習/深度學習課程 (YouTube)</a> / <a href="https://www.bilibili.com/video/BV1JE411g7XF/" target="_blank" class="hover:underline">(Bilibili)</a></li>
+                        <li><a href="https://www.youtube.com/c/AstonZhang" target="_blank" class="hover:underline">李沐博士論文精讀系列 (YouTube)</a> / <a href="https://space.bilibili.com/156774845" target="_blank" class="hover:underline">(Bilibili)</a></li>
+                        <li><a href="https://pytorch.org/docs/stable/index.html" target="_blank" class="hover:underline">PyTorch官方文件 (pytorch.org)</a></li>
+                        <li><a href="https://github.com/WongKinYiu/yolov9" target="_blank" class="hover:underline">YOLOv9官方GitHub與相關論文</a></li>
+                        <li><a href="https://slurm.schedmd.com/documentation.html" target="_blank" class="hover:underline">Slurm官方文件 (slurm.schedmd.com)</a></li>
+                        <li><a href="https://apptainer.org/docs/" target="_blank" class="hover:underline">Singularity/Apptainer官方文件 (apptainer.org)</a></li>
+                    </ul>
+                </div>
+            </header>
+            
+            <section id="content-area" class="mt-8">
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const learningData = [
+            {
+                week: 1,
+                title: "第一週：基礎知識建立 (7月1日 - 7月5日)",
+                short_title: "基礎知識建立",
+                load: 4, 
+                icon: "📚",
+                content: {
+                    goals: ["Python程式設計複習與進階 (特別是與資料科學相關的函式庫)", "深度學習基本概念 (神經網路、梯度下降、反向傳播等)", "PyTorch基礎 (張量操作、自動微分、模型搭建、資料載入)"],
+                    resources: ["Python: 複習NumPy, Pandas, Matplotlib。", "深度學習: 李宏毅機器學習課程 (約前10-15講，涵蓋DL基礎)", "PyTorch官方教學 \"Deep Learning with PyTorch: A 60 Minute Blitz\"。", "PyTorch: 張量 (Tensors)、autograd、nn.Module、optim、Dataset & DataLoader。"],
+                    exercises: ["完成PyTorch官方教學中的所有範例。", "使用PyTorch實現一個簡單的線性回歸模型。", "使用PyTorch實現一個簡單的多層感知機 (MLP) 並在MNIST數據集上進行訓練與測試。"],
+                    deliverables: ["提交包含上述實作任務的Python腳本。", "學習筆記：整理Python進階、DL基礎及PyTorch核心概念。", "GitHub初步建立：創建專案倉儲，上傳本週程式碼。"]
+                }
+            },
+            {
+                week: 2,
+                title: "第二週：多GPU與分散式訓練入門 (7月8日 - 7月12日)",
+                short_title: "多GPU與分散式訓練",
+                load: 5, 
+                icon: "💻",
+                content: {
+                    goals: ["PyTorch進階模型 (CNN, RNN)", "理解GPU運算原理與PyTorch的GPU支援 (.to(device))", "單機多GPU訓練 (nn.DataParallel, nn.DistributedDataParallel 概念介紹)", "YOLO系列模型概覽 (了解其應用場景與基本原理)"],
+                    resources: ["PyTorch進階: 李宏毅深度學習課程 (CNN, RNN相關章節)。", "PyTorch官方教學 (Convolutional Neural Networks, Recurrent Neural Networks)。", "多GPU: PyTorch官方文件關於 nn.DataParallel 和 nn.DistributedDataParallel (DDP) 的介紹。", "李沐論文精讀：可選讀一篇與分散式訓練相關的基礎論文 (例如早期參數伺服器或AllReduce概念)。", "YOLO: 閱讀YOLO系列論文摘要 (YOLOv1 ~ YOLOv9)，了解其發展脈絡。", "觀看YOLOv9相關介紹影片或文章。"],
+                    exercises: ["使用PyTorch實現一個CNN模型 (如LeNet-5或簡化版AlexNet) 在CIFAR-10數據集上進行訓練。", "將上一個CNN模型改寫為能在單機多GPU上使用 nn.DataParallel 運行 (若硬體允許)。", "初步嘗試運行YOLOv9官方提供的預訓練模型進行推論 (inference)。"],
+                    deliverables: ["提交CNN模型程式碼及 DataParallel 版本程式碼。", "YOLOv9預訓練模型推論結果截圖或報告。", "學習筆記：整理CNN、RNN原理，以及 DataParallel 的使用方法與限制。"]
+                }
+            },
+            {
+                week: 3,
+                title: "第三週：Slurm與Singularity基礎 (7月15日 - 7月19日)",
+                short_title: "Slurm與Singularity",
+                load: 4, 
+                icon: "⚙️",
+                content: {
+                    goals: ["HPC (高效能運算) 叢集基本概念", "Slurm工作排程系統：核心概念 (節點, 分區, 工作, 任務), 常用指令 (sinfo, squeue, sbatch, scancel, srun), 批次腳本 (batch script) 撰寫", "Singularity (Apptainer) 容器技術：容器化概念與優勢, Singularity映像檔 (SIF) 的建立與使用, 定義檔 (Definition File) 撰寫基礎"],
+                    resources: ["Slurm: Slurm官方快速入門指南。", "閱讀學校或機構HPC叢集提供的Slurm使用手冊。", "Singularity: Singularity/Apptainer官方文件 (Quick Start, User Guide)。", "學習如何從Docker Hub拉取映像並轉換為Singularity格式。"],
+                    exercises: ["撰寫並提交一個簡單的Slurm批次腳本，執行一個Python程式 (例如印出 \"Hello Slurm\")。", "學習查詢叢集狀態、提交工作、查看工作狀態、取消工作。", "建立一個包含PyTorch環境的Singularity定義檔，並成功建置SIF映像檔。", "在Singularity容器內運行先前開發的PyTorch MLP或CNN模型 (CPU版本即可)。"],
+                    deliverables: ["提交Slurm批次腳本範例。", "提交Singularity定義檔及建置成功的SIF映像檔 (或提供定義檔供檢視)。", "學習筆記：整理Slurm常用指令與批次腳本語法，Singularity映像檔建立與使用流程。"]
+                }
+            },
+            {
+                week: 4,
+                title: "第四週：整合實作與專案選題 (7月22日 - 7月26日)",
+                short_title: "整合與專案選題",
+                load: 5, 
+                icon: "🧭",
+                content: {
+                    goals: ["整合Slurm與Singularity運行PyTorch程式。", "PyTorch nn.DistributedDataParallel (DDP) 的深入理解與初步實作 (單節點多GPU)。", "YOLOv9模型架構初探 (閱讀論文或分析程式碼結構)。", "專案題目發想與文獻回顧。"],
+                    resources: ["整合: 學習如何在Slurm批次腳本中啟動Singularity容器，並在容器內執行PyTorch程式。", "DDP: PyTorch官方DDP教學。", "李沐論文精讀：精讀一篇與DDP或更先進分散式訓練框架相關的論文 (如Horovod, DeepSpeed等概念)。", "YOLOv9: 仔細閱讀YOLOv9論文，特別是其創新點。", "瀏覽YOLOv9官方GitHub的models和train.py部分。"],
+                    exercises: ["撰寫Slurm批次腳本，透過Singularity容器運行第二週的CNN模型 (使用單GPU)。", "(若硬體與環境允許) 嘗試將CNN模型改寫為使用DDP在單節點多GPU上訓練。", "下載YOLOv9原始碼，嘗試理解其資料載入、模型建構、訓練迴圈的基本流程。", "開始思考最終專案方向 (例如：使用YOLOv9對特定資料集進行物件偵測、改進YOLOv9的某個模組、分析YOLOv9在不同硬體配置下的效能等)，並進行初步文獻搜尋。"],
+                    deliverables: ["提交整合Slurm與Singularity運行PyTorch程式的腳本。", "DDP (單節點) 實作程式碼 (若完成)。", "初步專案構想書 (1-2頁，包含問題描述、初步方法、預期目標、相關文獻列表)。"]
+                }
+            },
+            {
+                week: 5,
+                title: "第五週：專案開發與實驗 (7月29日 - 8月2日)",
+                short_title: "專案開發與實驗",
+                load: 6, 
+                icon: "🧪",
+                content: {
+                    goals: ["確定專案題目與研究目標。", "YOLOv9模型客製化訓練：準備自訂資料集、修改設定檔、開始初步訓練。", "多GPU訓練實戰 (DDP)。", "實驗設計與版本控制 (Git)。"],
+                    resources: ["YOLOv9訓練: YOLOv9官方文件關於自訂資料集訓練的指南。", "學習資料標註工具 (如LabelImg, CVAT) 的使用。", "專案管理: Git基本操作 (commit, push, branch, merge)。"],
+                    exercises: ["根據選定的專案題目，準備或獲取相應的資料集。", "對資料集進行預處理與標註 (若需要)。", "修改YOLOv9設定檔，使用自訂資料集在單GPU上進行初步訓練。", "將YOLOv9訓練腳本調整為支援DDP，並在單節點多GPU環境下 (透過Slurm + Singularity) 進行訓練。", "建立詳細的實驗記錄，追蹤不同參數設定下的訓練結果。", "開始撰寫論文的「緒論」與「相關研究」部分。"],
+                    deliverables: ["GitHub專案更新：包含資料集準備腳本 (若有)、YOLOv9設定檔、初步訓練腳本。", "初步訓練結果報告 (包含損失曲線、評估指標等)。", "論文初稿：緒論與相關研究部分。"]
+                }
+            },
+            {
+                week: 6,
+                title: "第六週：實驗優化與論文撰寫 (8月5日 - 8月9日)",
+                short_title: "優化與論文撰寫",
+                load: 6, 
+                icon: "📈",
+                content: {
+                    goals: ["跨節點多GPU訓練 (若資源允許，挑戰Slurm設定多節點任務)。", "模型調參與效能優化 (學習率調整、批次大小、正則化等)。", "實驗結果分析與視覺化。", "論文「方法」部分撰寫。"],
+                    resources: ["跨節點訓練: Slurm進階設定 (節點列表、任務分配)。", "PyTorch DDP跨節點通訊設定 (NCCL, Gloo)。", "李沐論文精讀：可選讀一篇關於大規模訓練或模型壓縮/加速的論文。", "論文寫作: 學術論文結構與寫作規範。"],
+                    exercises: ["持續進行YOLOv9模型訓練與調參，目標是提升模型在自訂資料集上的表現。", "(挑戰任務) 嘗試配置並執行跨節點多GPU訓練。", "分析實驗數據，使用Matplotlib等工具繪製圖表 (如mAP變化、損失曲線比較等)。", "撰寫論文的「實驗方法」部分，詳細描述資料集、模型架構、訓練設定、評估指標。", "開始撰寫論文的「實驗結果」部分。"],
+                    deliverables: ["GitHub專案更新：包含優化後的訓練腳本、實驗結果數據與圖表。", "跨節點訓練嘗試報告 (若進行)。", "論文初稿：方法與實驗結果部分。"]
+                }
+            },
+            {
+                week: 7,
+                title: "第七週：論文修改與成果整理 (8月12日 - 8月16日)",
+                short_title: "論文修改與整理",
+                load: 4, 
+                icon: "📄",
+                content: {
+                    goals: ["論文「結論」與「摘要」撰寫。", "論文整體校閱、修改與潤飾。", "GitHub專案整理與文件完善 (README.md)。", "成果簡報架構設計。"],
+                    resources: ["參考優秀學術論文的寫作風格與結構。", "學習如何撰寫清晰、簡潔的README文件。"],
+                    exercises: ["完成論文剩餘部分 (結論、摘要、參考文獻)。", "多次通讀論文，檢查邏輯、流暢度、文法與格式。", "整理GitHub專案，確保程式碼可讀性、註解完整，並撰寫詳細的README.md，說明專案內容、如何設定環境、執行程式碼。", "設計成果簡報的初步大綱與內容。"],
+                    deliverables: ["接近完成的論文稿件。", "結構完整、文件清晰的GitHub專案。", "成果簡報大綱。"]
+                }
+            },
+            {
+                week: 8,
+                title: "第八週：成果發表與總結 (8月19日 - 8月23日)",
+                short_title: "成果發表與總結",
+                load: 3, 
+                icon: "🏆",
+                content: {
+                    goals: ["成果簡報製作與演練。", "專案總結與未來工作展望。", "準備論文投稿 (選擇合適的會議或期刊)。"],
+                    resources: ["觀摩優秀的學術簡報。"],
+                    exercises: ["製作最終的成果簡報投影片。", "進行多次簡報演練，控制時間並熟悉內容。", "模擬問答環節。", "根據指導老師意見，最終修改論文，準備投稿。", "整理所有學習筆記與心得。"],
+                    deliverables: ["最終版成果投影片。", "完成的論文稿件 (準備投稿狀態)。", "完整的GitHub專案。", "暑期實習總結報告 (可包含學習心得、遇到的困難與解決方法、未來方向等)。", "內部成果發表會。"]
+                }
+            }
+        ];
+
+        const navigationEl = document.getElementById('navigation');
+        const contentAreaEl = document.getElementById('content-area');
+        let currentWeek = 1;
+        const apiKey = ""; 
+
+        function renderNavigation() {
+            navigationEl.innerHTML = learningData.map(item => `
+                <button 
+                    class="nav-item w-full text-left p-3 my-1 md:my-1.5 rounded-lg font-medium text-gray-600 ${item.week === currentWeek ? 'active' : ''}"
+                    data-week="${item.week}">
+                    <span class="mr-2 text-lg">${item.icon}</span>
+                    <span class="hidden md:inline">第 ${item.week} 週</span>
+                    <span class="md:hidden text-xs">${item.short_title}</span>
+                </button>
+            `).join('');
+
+            document.querySelectorAll('.nav-item').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const week = parseInt(e.currentTarget.dataset.week);
+                    updateContent(week);
+                });
+            });
+        }
+        
+        function createContentBlock(title, items, icon, weekData = null, type = null) {
+            if (!items || items.length === 0) return '';
+            
+            let blockClasses = "mb-6";
+            let titleClasses = "text-xl font-semibold text-gray-700 border-b-2 border-gray-200 pb-2 mb-3 flex items-center";
+            let listClasses = "list-disc list-inside space-y-2 text-gray-600 pl-2 text-sm";
+
+            if (type === 'deliverables') {
+                blockClasses = "highlighted-deliverables"; // Uses specific background and border
+                // For highlighted-deliverables, h4 and ul colors are set by its own CSS rule
+            }
+
+            let blockHTML = `
+                <div class="${blockClasses}">
+                    <h4 class="${titleClasses}">
+                       <span class="text-2xl mr-3">${icon}</span> ${title}
+                    </h4>
+                    <ul class="${listClasses}">
+                        ${items.map(item => `<li>${item.replace(/`([^`]+)`/g, '<code class="bg-gray-200 text-sm text-red-600 font-mono px-1 py-0.5 rounded">$1</code>')}</li>`).join('')}
+                    </ul>`;
+            
+            if (type === 'exercises' && weekData && weekData.week === 8) {
+                blockHTML += `
+                    <div class="gemini-feature-card">
+                        <h5 class="text-md font-semibold text-gray-700 mb-2">✨ 專案點子產生器</h5>
+                        <p class="text-sm text-gray-500 mb-3">讓 AI 根據前七週所學，為您的最終專案提供更多元的靈感。</p>
+                        <button id="generateProjectIdeasBtn" class="gemini-button text-sm">獲取專案點子</button>
+                        <div id="projectIdeasLoader" class="loader hidden mt-2"></div>
+                        <div id="projectIdeasResponse" class="gemini-response hidden"></div>
+                    </div>`;
+            }
+            if (type === 'resources' && weekData) {
+                 blockHTML += `
+                    <div class="gemini-feature-card">
+                        <h5 class="text-md font-semibold text-gray-700 mb-2">✨ 擴充資源建議</h5>
+                        <p class="text-sm text-gray-500 mb-3">讓 AI 針對本週主題「${weekData.short_title}」推薦更多學習資源。</p>
+                        <button id="findMoreResourcesBtn" class="gemini-button text-sm">尋找更多資源</button>
+                        <div id="moreResourcesLoader" class="loader hidden mt-2"></div>
+                        <div id="moreResourcesResponse" class="gemini-response hidden"></div>
+                    </div>`;
+            }
+
+            blockHTML += `</div>`;
+            return blockHTML;
+        }
+
+        function renderContent(week) {
+            const data = learningData.find(item => item.week === week);
+            if (!data) return;
+            
+            contentAreaEl.innerHTML = `
+                <div class="content-card p-6 md:p-8 animate-fade-in">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-1">${data.icon} ${data.title}</h3>
+                    <p class="text-sm text-gray-500 mb-6">(${data.short_title})</p>
+
+                    ${createContentBlock('學習重點', data.content.goals, '🎯')}
+                    ${createContentBlock('學習內容與資源', data.content.resources, '📖', data, 'resources')}
+                    ${createContentBlock('實作任務', data.content.exercises, '💻', data, 'exercises')}
+                    ${createContentBlock('每週成果', data.content.deliverables, '✅', data, 'deliverables')}
+
+                    <div class="gemini-feature-card">
+                        <h4 class="text-xl font-semibold text-gray-700 mb-3">✨ 智能學習夥伴</h4>
+                        <p class="text-sm text-gray-500 mb-3">對本週主題「${data.short_title}」有任何疑問嗎？問問 AI 吧！</p>
+                        <textarea id="askCompanionInput" class="gemini-input mb-2 text-sm" rows="3" placeholder="請在此輸入您關於「${data.short_title}」的問題..."></textarea>
+                        <button id="askCompanionBtn" class="gemini-button text-sm">發送問題</button>
+                        <div id="askCompanionLoader" class="loader hidden mt-2"></div>
+                        <div id="askCompanionResponse" class="gemini-response hidden"></div>
+                    </div>
+                </div>
+                <style>
+                    @keyframes fade-in {
+                        from { opacity: 0; transform: translateY(10px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                    .animate-fade-in {
+                        animation: fade-in 0.5s ease-in-out;
+                    }
+                </style>
+            `;
+            attachGeminiEventListeners(data);
+        }
+        
+        function updateContent(week) {
+            currentWeek = week;
+            renderNavigation();
+            renderContent(week);
+        }
+        
+        async function callGeminiAPI(prompt, responseElementId, loaderElementId) {
+            const responseEl = document.getElementById(responseElementId);
+            const loaderEl = document.getElementById(loaderElementId);
+
+            if (!responseEl || !loaderEl) return;
+
+            loaderEl.classList.remove('hidden');
+            responseEl.classList.add('hidden');
+            responseEl.textContent = '';
+
+            try {
+                const payload = {
+                    contents: [{ role: "user", parts: [{ text: prompt }] }]
+                };
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                
+                const res = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    throw new Error(errorData.error ? errorData.error.message : `API 請求失敗，狀態碼：${res.status}`);
+                }
+
+                const result = await res.json();
+                
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    responseEl.textContent = text;
+                } else {
+                    responseEl.textContent = '抱歉，AI 未能提供有效的回覆。';
+                }
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                responseEl.textContent = `發生錯誤：${error.message}\n（如果 API 金鑰未設定，此功能將無法運作。）`;
+            } finally {
+                loaderEl.classList.add('hidden');
+                responseEl.classList.remove('hidden');
+            }
+        }
+
+        function attachGeminiEventListeners(weekData) {
+            const askCompanionBtn = document.getElementById('askCompanionBtn');
+            if (askCompanionBtn) {
+                askCompanionBtn.addEventListener('click', () => {
+                    const input = document.getElementById('askCompanionInput');
+                    if (input.value.trim() === '') {
+                        alert('請先輸入您的問題。');
+                        return;
+                    }
+                    const prompt = `我正在參與一個關於「多GPU環境PyTorch深度學習模型開發與HPC工具應用」的暑期實習。目前是第 ${weekData.week} 週，主題是「${weekData.title}」。關於這個主題，我想請問：${input.value}\n請提供簡潔易懂的解釋，並考慮到我正在為最終的學術論文和專案做準備。`;
+                    callGeminiAPI(prompt, 'askCompanionResponse', 'askCompanionLoader');
+                });
+            }
+
+            if (weekData.week === 8) {
+                const generateProjectIdeasBtn = document.getElementById('generateProjectIdeasBtn');
+                if (generateProjectIdeasBtn) {
+                    generateProjectIdeasBtn.addEventListener('click', () => {
+                        const learnedTopics = learningData.slice(0, 7).map(w => w.short_title).join(', ');
+                        const prompt = `我是一名即將完成為期八週「多GPU環境PyTorch深度學習模型開發與HPC工具應用」暑期實習的學生。我已學習了以下主題：${learnedTopics} (包含PyTorch, 多GPU訓練如DataParallel/DDP, YOLOv9模型, Slurm, Singularity等HPC工具)。我最終的成果需要包含一個GitHub專案和一篇學術論文初稿。請根據我所學的內容，提供 3-4 個具體且有研究價值的專案點子，並簡要說明每個點子可以如何實踐，以及可能的創新點或研究方向，以符合學術論文的要求。`;
+                        callGeminiAPI(prompt, 'projectIdeasResponse', 'projectIdeasLoader');
+                    });
+                }
+            }
+            
+            const findMoreResourcesBtn = document.getElementById('findMoreResourcesBtn');
+            if (findMoreResourcesBtn) {
+                findMoreResourcesBtn.addEventListener('click', () => {
+                    const prompt = `我正在學習第 ${weekData.week} 週的主題：「${weekData.title}」。為了更深入理解並為我的專案和論文做準備，請推薦 2-3 個額外的進階學習資源。這些資源可以是相關領域的最新研究論文、重要的開源專案、深入的技術部落格文章、或有用的工具。請提供資源名稱，如果可能的話，也附上簡短描述其為何重要或與主題相關。`;
+                    callGeminiAPI(prompt, 'moreResourcesResponse', 'moreResourcesLoader');
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateContent(currentWeek); 
+        });
+    </script>
+</body>
+</html>
+
