@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>互動式暑期實習計畫 (整合Gemini API)</title>
+    <title>互動式暑期實習計畫</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Visualization & Content Choices: 
-        1. Weekly Plan Display: Content for each week (goals, resources, exercises, deliverables) updated according to user's new '%plan%'. 'Weekly Deliverables' section has enhanced styling. Specific URLs added to Week 1, 2, 3, and 4 content for relevant tools and concepts.
+        1. Weekly Plan Display: Content for each week updated according to user's plan. "Weekly Deliverables" section has enhanced styling. Specific URLs added. All Gemini API related features, including "Project Idea Generator", have been removed as requested.
         2. Header Text: "Final Deliverables" section has a light yellow background. "Recommended Overall Learning Resources" includes NCHC link.
-        3. Intelligent Learning Companion (Gemini): Prompts will use updated short_titles.
-        4. Project Idea Generator (Week 8, Gemini): Prompt will use updated topics from the new plan.
-        5. Resource Expansion Suggester (Gemini): Prompts will use updated short_titles.
     -->
     <style>
         body {
@@ -38,54 +35,6 @@
             background-color: #FFFFFF;
             border-radius: 0.75rem;
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        }
-        .gemini-feature-card {
-            border: 1px solid #E2E8F0;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-top: 1.5rem;
-            background-color: #F9FAFB;
-        }
-        .gemini-button {
-            background-color: #4A5568;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            font-weight: 500;
-            transition: background-color 0.2s;
-        }
-        .gemini-button:hover {
-            background-color: #2D3748;
-        }
-        .gemini-input {
-            border: 1px solid #D1D5DB;
-            padding: 0.5rem;
-            border-radius: 0.375rem;
-            width: 100%;
-        }
-        .gemini-response {
-            margin-top: 1rem;
-            padding: 0.75rem;
-            background-color: #FFFFFF;
-            border: 1px solid #E5E7EB;
-            border-radius: 0.375rem;
-            white-space: pre-wrap; 
-            font-size: 0.9rem;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #4A5568;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            margin: 0.5rem auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
         .resource-list li {
             margin-bottom: 0.25rem;
@@ -299,7 +248,6 @@
         const navigationEl = document.getElementById('navigation');
         const contentAreaEl = document.getElementById('content-area');
         let currentWeek = 1;
-        const apiKey = ""; 
 
         function renderNavigation() {
             navigationEl.innerHTML = learningData.map(item => `
@@ -351,27 +299,6 @@
                         }).join('')}
                     </ul>`;
             
-            if (type === 'exercises' && weekData && weekData.week === 8) {
-                blockHTML += `
-                    <div class="gemini-feature-card">
-                        <h5 class="text-md font-semibold text-gray-700 mb-2">✨ 專案點子產生器</h5>
-                        <p class="text-sm text-gray-500 mb-3">讓 AI 根據前七週所學，為您的最終專案提供更多元的靈感。</p>
-                        <button id="generateProjectIdeasBtn" class="gemini-button text-sm">獲取專案點子</button>
-                        <div id="projectIdeasLoader" class="loader hidden mt-2"></div>
-                        <div id="projectIdeasResponse" class="gemini-response hidden"></div>
-                    </div>`;
-            }
-            if (type === 'resources' && weekData) { 
-                 blockHTML += `
-                    <div class="gemini-feature-card">
-                        <h5 class="text-md font-semibold text-gray-700 mb-2">✨ 擴充資源建議</h5>
-                        <p class="text-sm text-gray-500 mb-3">讓 AI 針對本週主題「${weekData.short_title}」推薦更多學習資源。</p>
-                        <button id="findMoreResourcesBtn" class="gemini-button text-sm">尋找更多資源</button>
-                        <div id="moreResourcesLoader" class="loader hidden mt-2"></div>
-                        <div id="moreResourcesResponse" class="gemini-response hidden"></div>
-                    </div>`;
-            }
-
             blockHTML += `</div>`;
             return blockHTML;
         }
@@ -387,17 +314,8 @@
 
                     ${createContentBlock('學習重點', data.content.goals, '🎯', data, 'goals')}
                     ${createContentBlock('學習內容', data.content.resources, '📖', data, 'resources')}
-                    ${data.content.exercises && data.content.exercises.length > 0 ? createContentBlock('實作任務', data.content.exercises, '💻', data, 'exercises') : ''}
+                    ${data.content.exercises && data.content.exercises.length > 0 ? createContentBlock('實作任務', data.content.exercises, '�', data, 'exercises') : ''}
                     ${createContentBlock('每週成果', data.content.deliverables, '✅', data, 'deliverables')}
-
-                    <div class="gemini-feature-card">
-                        <h4 class="text-xl font-semibold text-gray-700 mb-3">✨ 智能學習夥伴</h4>
-                        <p class="text-sm text-gray-500 mb-3">對本週「${data.short_title}」有任何疑問嗎？問問 AI 吧！</p>
-                        <textarea id="askCompanionInput" class="gemini-input mb-2 text-sm" rows="3" placeholder="請在此輸入您關於「${data.short_title}」的問題..."></textarea>
-                        <button id="askCompanionBtn" class="gemini-button text-sm">發送問題</button>
-                        <div id="askCompanionLoader" class="loader hidden mt-2"></div>
-                        <div id="askCompanionResponse" class="gemini-response hidden"></div>
-                    </div>
                 </div>
                 <style>
                     @keyframes fade-in {
@@ -409,7 +327,6 @@
                     }
                 </style>
             `;
-            attachGeminiEventListeners(data);
         }
         
         function updateContent(week) {
@@ -418,90 +335,6 @@
             renderContent(week);
         }
         
-        async function callGeminiAPI(prompt, responseElementId, loaderElementId) {
-            const responseEl = document.getElementById(responseElementId);
-            const loaderEl = document.getElementById(loaderElementId);
-
-            if (!responseEl || !loaderEl) return;
-
-            loaderEl.classList.remove('hidden');
-            responseEl.classList.add('hidden');
-            responseEl.textContent = '';
-
-            try {
-                const payload = {
-                    contents: [{ role: "user", parts: [{ text: prompt }] }]
-                };
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                
-                const res = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!res.ok) {
-                    const errorData = await res.json();
-                    throw new Error(errorData.error ? errorData.error.message : `API 請求失敗，狀態碼：${res.status}`);
-                }
-
-                const result = await res.json();
-                
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    responseEl.textContent = text;
-                } else {
-                    responseEl.textContent = '抱歉，AI 未能提供有效的回覆。';
-                }
-            } catch (error) {
-                console.error("Gemini API Error:", error);
-                responseEl.textContent = `發生錯誤：${error.message}\n（如果 API 金鑰未設定，此功能將無法運作。）`;
-            } finally {
-                loaderEl.classList.add('hidden');
-                responseEl.classList.remove('hidden');
-            }
-        }
-
-        function attachGeminiEventListeners(weekData) {
-            const askCompanionBtn = document.getElementById('askCompanionBtn');
-            if (askCompanionBtn) {
-                askCompanionBtn.addEventListener('click', () => {
-                    const input = document.getElementById('askCompanionInput');
-                    if (input.value.trim() === '') {
-                        alert('請先輸入您的問題。');
-                        return;
-                    }
-                    const prompt = `我正在參與一個關於「多GPU環境PyTorch深度學習模型開發與HPC工具應用」的暑期實習。目前是${weekData.title}，主題是「${weekData.short_title}」。關於這個主題，我想請問：${input.value}\n請提供簡潔易懂的解釋，並考慮到我正在為最終的學術論文和專案做準備。`;
-                    callGeminiAPI(prompt, 'askCompanionResponse', 'askCompanionLoader');
-                });
-            }
-
-            if (weekData.week === 8) {
-                const generateProjectIdeasBtn = document.getElementById('generateProjectIdeasBtn');
-                if (generateProjectIdeasBtn) {
-                    generateProjectIdeasBtn.addEventListener('click', () => {
-                        const learnedTopics = learningData.slice(0, 7).map(w => w.short_title).join(', ');
-                        const prompt = `我是一名即將完成為期八週「多GPU環境PyTorch深度學習模型開發與HPC工具應用」暑期實習的學生。我已學習了以下主題：${learnedTopics} (包含PyTorch, TWCC, Singularity, Slurm, YOLOv9, 多GPU訓練, wandb.ai)。我最終的成果需要包含一個GitHub專案和一篇學術論文/技術報告初稿。請根據我所學的內容，提供 3-4 個具體且有研究價值的專案點子，並簡要說明每個點子可以如何實踐，以及可能的創新點或研究方向，以符合學術論文/技術報告的要求。`;
-                        callGeminiAPI(prompt, 'projectIdeasResponse', 'projectIdeasLoader');
-                    });
-                }
-            }
-            
-            const findMoreResourcesBtn = document.getElementById('findMoreResourcesBtn');
-            if (findMoreResourcesBtn && weekData.content.resources && weekData.content.resources.length > 0) { 
-                findMoreResourcesBtn.addEventListener('click', () => {
-                    const plainResources = weekData.content.resources.filter(r => !r.startsWith("<a href=") && !r.startsWith("<span class='sub-item-link'>")).join(', ');
-                    const prompt = `我正在學習${weekData.title}的主題：「${weekData.short_title}」，目前的學習內容包含：${plainResources}。為了更深入理解並為我的專案和論文做準備，請推薦 2-3 個與這些內容相關的額外進階學習資源。這些資源可以是相關領域的最新研究論文、重要的開源專案、深入的技術部落格文章、或有用的工具。請提供資源名稱，如果可能的話，也附上簡短描述其為何重要或與主題相關。`;
-                    callGeminiAPI(prompt, 'moreResourcesResponse', 'moreResourcesLoader');
-                });
-            } else if (findMoreResourcesBtn) { 
-                 const parentCard = findMoreResourcesBtn.closest('.gemini-feature-card');
-                 if(parentCard) parentCard.classList.add('hidden');
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
             updateContent(currentWeek); 
         });
